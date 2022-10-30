@@ -14,15 +14,17 @@ func GetAllBulbs() *map[string]bulb_handler.Bulb {
 			"932c32bd-0000-47a2-835a-a8d455b859dd",
 			&bluetooth.Device{},
 			hue_filament_bulb.GetServices(),
+			SetBrightnessDefault,
 		),
 	}
 	return &supportedBulbs
 }
 
-func buildBulb(inputUUID string, connection *bluetooth.Device, characteristics bulb_handler.AvailableCharacteristics) bulb_handler.Bulb {
+func buildBulb(inputUUID string, connection *bluetooth.Device, characteristics bulb_handler.AvailableCharacteristics, bFunc func(*bulb_handler.Bulb, uint16) bool) bulb_handler.Bulb {
 	return bulb_handler.Bulb{
-		UUID:            helpers.MustParse(inputUUID),
-		Connection:      connection,
-		Characteristics: hue_filament_bulb.GetServices(),
+		UUID:              helpers.MustParse(inputUUID),
+		Connection:        connection,
+		Characteristics:   hue_filament_bulb.GetServices(),
+		SetBrightnessFunc: bFunc,
 	}
 }
