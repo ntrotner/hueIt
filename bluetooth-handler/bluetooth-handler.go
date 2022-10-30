@@ -27,7 +27,9 @@ func InitializeBluetoothHandler(bulbs *map[string]bulb_handler.Bulb) {
 			log.Print("Found Supported Bulb")
 			adapter.StopScan()
 			log.Println(" - Stopped Scanning")
-			bulb_handler.InitializeBulbStream(connectToBulb(&device, &bulb))
+
+			bulbConnection := connectToBulb(&device, &bulb)
+			bulb_handler.InitializeBulbStream(bulbConnection)
 		}
 	})
 
@@ -37,6 +39,10 @@ func InitializeBluetoothHandler(bulbs *map[string]bulb_handler.Bulb) {
 }
 
 func connectToBulb(device *bluetooth.ScanResult, bulb *bulb_handler.Bulb) *bulb_handler.Bulb {
+	adapter.SetConnectHandler((func(device bluetooth.Addresser, connected bool) {
+		log.Println("Is Connected:", connected)
+	}))
+
 	connectedDevice, err := adapter.Connect(device.Address, bluetooth.ConnectionParams{})
 
 	if err != nil {
